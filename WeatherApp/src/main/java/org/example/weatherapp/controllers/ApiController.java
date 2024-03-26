@@ -21,14 +21,14 @@ public class ApiController {
     }
 
     // endpoints
-    @PostMapping("/weather")        // error 415 with @RequestBody InputDTO inputDTO and inputDTO.getCity()
-    public ResponseEntity<WeatherResponseDTO> getLocalWeather(@RequestParam String city, @RequestParam Long id) throws Exception {
-        WeatherResponseDTO weatherResponseDTO = weatherService.findWeather(city);
+    @PostMapping("/weather")
+    public ResponseEntity<WeatherResponseDTO> getLocalWeather(@RequestBody InputDTO inputDTO) throws Exception {
+        WeatherResponseDTO weatherResponseDTO = weatherService.findWeather(inputDTO.getCity());
         if (weatherResponseDTO == null) {
             return ResponseEntity.notFound().build();
         }
 
-        weatherService.save(weatherResponseDTO, id);
+        weatherService.save(weatherResponseDTO, inputDTO.getId());
         return ResponseEntity.ok(weatherResponseDTO);
     }
 }

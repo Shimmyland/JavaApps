@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InputDTO {
 
+    private Long id;
     private String city;
 }

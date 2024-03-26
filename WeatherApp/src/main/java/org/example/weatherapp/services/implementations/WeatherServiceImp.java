@@ -25,7 +25,7 @@ public class WeatherServiceImp implements WeatherService {
 
     // fields
     private WeatherAPI weatherAPI;
-    private final String apiKey = "606c98d47bbd0b1967c88cca6ddcc129";
+    private final String apiKey = System.getenv().get("key");
 
     // constructor
     @Autowired
@@ -38,6 +38,7 @@ public class WeatherServiceImp implements WeatherService {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         this.weatherAPI = retrofit.create(WeatherAPI.class);
+        System.out.println("apikey: " + apiKey);
     }
 
     // methods
@@ -45,16 +46,6 @@ public class WeatherServiceImp implements WeatherService {
     public WeatherResponseDTO findWeather(String city) {
         Call<WeatherResponseDTO> request = weatherAPI.weatherRequest(city, apiKey);
         WeatherResponseDTO result = null;
-
-        /* statements for testing it works
-        System.out.println(fetchData.toString());
-        // Print the request URL
-        System.out.println("Request URL: " + fetchData.request().url());
-        // Print the request headers
-        Headers headers = fetchData.request().headers();
-        for (int i = 0, size = headers.size(); i < size; i++) {
-            System.out.println(headers.name(i) + ": " + headers.value(i));
-        } */
 
         try {
             Response<WeatherResponseDTO> getResponse = request.execute();
