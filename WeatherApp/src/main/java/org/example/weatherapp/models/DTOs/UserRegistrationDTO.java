@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class UserRegistrationDTO {
 
     // used as an input for user registration
 

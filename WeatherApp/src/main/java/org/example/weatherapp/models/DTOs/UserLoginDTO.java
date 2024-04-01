@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InputDTO {
+public class UserLoginDTO {
 
-    // used for weather API as an input
+    // used as an input for user login
 
-    private UUID id;
-    private String city;
+    private String username;
+    private String password;
+
 }

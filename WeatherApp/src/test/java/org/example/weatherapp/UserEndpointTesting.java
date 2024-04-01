@@ -1,7 +1,7 @@
 package org.example.weatherapp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.weatherapp.models.DTOs.InputDTO;
+import org.example.weatherapp.models.DTOs.WeatherInputDTO;
 import org.example.weatherapp.models.User;
 import org.example.weatherapp.repositories.UserRepository;
 import org.example.weatherapp.services.UserService;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class endpointTesting {
+public class UserEndpointTesting {
 
     @Autowired
     MockMvc mockMvc;
@@ -40,21 +40,21 @@ public class endpointTesting {
     }
 
     @Test
-    public void testingEndpointSuccess() throws Exception {
+    public void successfulTestingRegistrationEndpoint() throws Exception {
         User user = new User(
-                "Shimmyland",
+                "pepik10",
                 "Password1!",
-                "simonlibiger@seznam.com",
-                "Simon",
-                "Libiger",
-                false,
+                "skokan.josef@gmail.com",
+                "Josef",
+                "Skokan",
+                true,
                 "Token"
         );
         user = userRepository.save(user);
 
-        InputDTO inputDTO = new InputDTO(user.getId(), "paris");
-        mockMvc.perform(post("/api/weather")
-                .content(op.writeValueAsString(inputDTO))
+        WeatherInputDTO weatherInputDTO = new WeatherInputDTO(user.getId(), "paris");
+        mockMvc.perform(post("/weather")
+                .content(op.writeValueAsString(weatherInputDTO))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

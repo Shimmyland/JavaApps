@@ -1,6 +1,7 @@
 package org.example.weatherapp.services.implementations;
 
 import org.example.weatherapp.models.DTOs.WeatherResponseDTO;
+import org.example.weatherapp.models.DTOs.WeatherSearchDTO;
 import org.example.weatherapp.models.Weather;
 import org.example.weatherapp.repositories.WeatherRepository;
 import org.example.weatherapp.services.UserService;
@@ -14,6 +15,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -63,20 +65,28 @@ public class WeatherServiceImp implements WeatherService {
     }
 
     @Override
-    public void save(WeatherResponseDTO weatherResponseDTO, UUID id) throws Exception {
+    public void save(WeatherResponseDTO weatherResponseDTO, UUID userId) throws Exception {
         String weatherCondition = null;
         for (WeatherResponseDTO.Weather weather : weatherResponseDTO.getWeather()){
             weatherCondition = weather.getMain();
         }
-
         Weather weather = new Weather(
-                userService.find(id),
+                userService.find(userId),
                 weatherResponseDTO.getName(),
                 weatherResponseDTO.getSys().getCountry(),
                 weatherResponseDTO.getMain().getTemp(),
                 weatherCondition
         );
-
         weatherRepository.save(weather);
+    }
+
+    @Override
+    public WeatherSearchDTO searchForSavedWeathers(String query) {
+        List<Weather> result = weatherRepository.findAllByNameOfCityIgnoreCaseContaining(query);
+        WeatherSearchDTO weatherSearchDTO = new WeatherSearchDTO();
+        for (Weather weather : result){
+            weatherSearchDTO.add(weather);
+        }
+        return weatherSearchDTO;
     }
 }

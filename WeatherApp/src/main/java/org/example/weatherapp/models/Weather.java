@@ -19,7 +19,11 @@ public class Weather {
     @GeneratedValue (strategy = GenerationType.AUTO)
     private UUID id;
 
-    // request sent
+    // db
+    @ManyToOne
+    private User user;
+
+    // date when request is sent
     private LocalDateTime localDateTime;
 
     // stats
@@ -27,10 +31,6 @@ public class Weather {
     private String country;
     private double temperature;
     private String weather;
-
-    // db
-    @ManyToOne
-    private User user;
 
 
     // custom constructor
