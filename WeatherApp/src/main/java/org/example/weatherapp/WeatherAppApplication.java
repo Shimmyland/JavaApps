@@ -1,5 +1,6 @@
 package org.example.weatherapp;
 
+import org.example.weatherapp.models.DTOs.UserDTO;
 import org.example.weatherapp.models.User;
 import org.example.weatherapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +25,13 @@ public class WeatherAppApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		userService.save(new User(
+		UserDTO userDTO = new UserDTO(
+				"Shimmyland",
+				"Password1!",
 				"Simon",
 				"Libiger",
-				"Shimmyland",
-				"Password",
 				"simonlibiger@gmail.com"
-		));
+		);
+		userService.save(userDTO);
 	}
 }

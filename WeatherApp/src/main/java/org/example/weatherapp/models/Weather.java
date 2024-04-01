@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,8 +16,8 @@ import java.util.Date;
 public class Weather {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue (strategy = GenerationType.AUTO)
+    private UUID id;
 
     // request sent
     private LocalDateTime localDateTime;

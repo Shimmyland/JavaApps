@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WeatherResponseDTO {
+
+    // used as a successful response of weather API
+
     private Long id;
     private String name;
     private int cod;

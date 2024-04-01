@@ -14,6 +14,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
 public class WeatherServiceImp implements WeatherService {
@@ -62,7 +63,7 @@ public class WeatherServiceImp implements WeatherService {
     }
 
     @Override
-    public void save(WeatherResponseDTO weatherResponseDTO, Long id) throws Exception {
+    public void save(WeatherResponseDTO weatherResponseDTO, UUID id) throws Exception {
         String weatherCondition = null;
         for (WeatherResponseDTO.Weather weather : weatherResponseDTO.getWeather()){
             weatherCondition = weather.getMain();

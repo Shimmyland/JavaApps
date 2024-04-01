@@ -9,10 +9,11 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class InputDTO {
+public class UserResponseDTO {
 
-    // used for weather API as an input
+    // used as a result successful user registration
 
     private UUID id;
-    private String city;
+    private String username;
+
 }

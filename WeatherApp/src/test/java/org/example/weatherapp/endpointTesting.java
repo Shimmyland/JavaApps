@@ -42,11 +42,13 @@ public class endpointTesting {
     @Test
     public void testingEndpointSuccess() throws Exception {
         User user = new User(
+                "Shimmyland",
+                "Password1!",
+                "simonlibiger@seznam.com",
                 "Simon",
                 "Libiger",
-                "Shimmyland",
-                "Password",
-                "simonlibiger@gmail.com"
+                false,
+                "Token"
         );
         user = userRepository.save(user);
 
