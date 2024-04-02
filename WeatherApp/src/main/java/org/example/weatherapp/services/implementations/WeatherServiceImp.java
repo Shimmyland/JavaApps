@@ -28,7 +28,7 @@ public class WeatherServiceImp implements WeatherService {
 
     // fields
     private WeatherAPI weatherAPI;
-    private final String apiKey = System.getenv().get("key");
+    private final String apiKey = System.getenv().get("apiKey");
 
     // constructor
     @Autowired
