@@ -24,19 +24,17 @@ public class UserController {
     // endpoints
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody UserRegistrationDTO userRegistrationDTO) {
-        // isEmailValid =
-        // isPasswordValid =
         try {
             if (!userService.isEmailValid(userRegistrationDTO.getEmail()) || !userService.isPasswordValid(userRegistrationDTO.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Invalid Format"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Email and/or password has not valid format."));
             }
             if (userService.isEmailInUse(userRegistrationDTO.getEmail()) || userService.isUsernameInUse(userRegistrationDTO.getUsername())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username or email is already in use"));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username and/or email is already in use."));
             }
             return ResponseEntity.ok().body(new UserResponseDTO(userService.save(userRegistrationDTO).getId(), userRegistrationDTO.getUsername()));
 
         } catch (MessagingException e) {
-            // error thrown by save method in userService when there is an issue with send verification email
+            // error thrown by userService.save (emailService.sendEmailVerification) when there is an issue with send verification email
             System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred while processing your request. Please try again later."));
         }

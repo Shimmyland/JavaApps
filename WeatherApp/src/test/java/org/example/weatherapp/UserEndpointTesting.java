@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -39,6 +40,7 @@ public class UserEndpointTesting {
         userRepository.deleteAll();
     }
 
+    // registration
     @Test
     public void successfulTestingRegistrationEndpoint() throws Exception {
         User user = new User(
@@ -50,12 +52,12 @@ public class UserEndpointTesting {
                 true,
                 "Token"
         );
-        user = userRepository.save(user);
+        userRepository.save(user);
 
         WeatherInputDTO weatherInputDTO = new WeatherInputDTO(user.getId(), "paris");
         mockMvc.perform(post("/weather")
-                .content(op.writeValueAsString(weatherInputDTO))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(op.writeValueAsString(weatherInputDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }

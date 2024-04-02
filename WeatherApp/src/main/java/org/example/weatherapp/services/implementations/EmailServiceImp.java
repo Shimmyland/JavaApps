@@ -49,7 +49,7 @@ public class EmailServiceImp implements EmailService {
         helper.setText("<p>Hi, " +
                 username +
                 "!</p><p>Thank you for choosing WeatherApp. You rock!</p><p>In order to verify your e-mail address, please, <a href=\"" +
-                System.getenv().get("homePageUrl") + "/verify-email/" +
+                System.getenv().get("homePageUrl") + "/verification/" +
                 token +
                 " \">" +
                 "click this link</a>.</p>", true);

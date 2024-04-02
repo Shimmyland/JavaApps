@@ -13,7 +13,7 @@ public class UserResponseDTO {
 
     // used as a result successful registration endpoint
 
-    private UUID id;
+    private UUID userId;
     private String username;
 
 }

@@ -21,7 +21,7 @@ public class WeatherController {
 
 
     // endpoints
-    @PostMapping("/weather")    // weather API search
+    @PostMapping("/weather")    // weather API search for a weather and saved in DB
     public ResponseEntity<WeatherResponseDTO> getLocalWeather(@RequestBody WeatherInputDTO weatherInputDTO) throws Exception {
         WeatherResponseDTO weatherResponseDTO = weatherService.findWeather(weatherInputDTO.getCity());
         if (weatherResponseDTO == null) {
@@ -32,7 +32,7 @@ public class WeatherController {
         return ResponseEntity.ok(weatherResponseDTO);
     }
 
-    @PostMapping("/search")     // weather search in DB
+    @PostMapping("/search")     // weather search in DB (by name_of_city)
     public ResponseEntity<?> searchInDatabase(@RequestParam (required = false, defaultValue = "") String query){
         WeatherSearchDTO weatherSearchDTO = weatherService.searchForSavedWeathers(query);
         if (weatherSearchDTO.getResults().isEmpty()){

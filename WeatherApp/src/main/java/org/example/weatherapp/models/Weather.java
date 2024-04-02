@@ -1,5 +1,6 @@
 package org.example.weatherapp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +11,6 @@ import java.util.Date;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Weather {
@@ -20,6 +20,7 @@ public class Weather {
     private UUID id;
 
     // db
+    @JsonIgnore         // used to ignore this field in /search endpoint, otherwise an infinitive loop occurs!
     @ManyToOne
     private User user;
 

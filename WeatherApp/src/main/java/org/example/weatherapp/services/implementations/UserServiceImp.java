@@ -32,8 +32,9 @@ public class UserServiceImp implements UserService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    // constants
+    // variables and constants
     SecretKey key = Keys.hmacShaKeyFor(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8));
+    // get en. variable and hash it (hide date behind "random" collection of characters)
 
     // constructor
     @Autowired
@@ -97,7 +98,7 @@ public class UserServiceImp implements UserService {
         );
 
 
-        if (!emailVerificationStatus()) {
+        if (!emailVerificationStatus()) {       // use in endpoint?
             emailService.sendEmailVerification(user.getEmail(), "WeatherApp email verification", user.getEmailVerificationToken(), user.getUsername());
             System.out.println("Email sent.");  // manual testing
         }
