@@ -1,67 +1,44 @@
 package org.example.weatherapp.controllers;
 
 import jakarta.mail.MessagingException;
-import org.example.weatherapp.models.DTOs.*;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.weatherapp.models.DTOs.JwtTokenDTO;
+import org.example.weatherapp.models.DTOs.ResponseDTO;
+import org.example.weatherapp.models.DTOs.UserLoginDTO;
+import org.example.weatherapp.models.DTOs.UserRegistrationDTO;
 import org.example.weatherapp.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
+@Validated                      // can be used BindingResult (contains errors based on @RequestBody entity)
 public class UserController {
 
-    // dependencies
     private final UserService userService;
 
-    // constructor
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-
-    // endpoints
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody UserRegistrationDTO userRegistrationDTO) {
-        try {
-            if (!userService.isEmailValid(userRegistrationDTO.getEmail()) || !userService.isPasswordValid(userRegistrationDTO.getPassword())) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Email and/or password has not valid format."));
-            }
-            if (userService.isEmailInUse(userRegistrationDTO.getEmail()) || userService.isUsernameInUse(userRegistrationDTO.getUsername())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO("Username and/or email is already in use."));
-            }
-            return ResponseEntity.ok().body(new UserResponseDTO(userService.save(userRegistrationDTO).getId(), userRegistrationDTO.getUsername()));
-
-        } catch (MessagingException e) {
-            // error thrown by userService.save (emailService.sendEmailVerification) when there is an issue with send verification email
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorDTO("An error occurred while processing your request. Please try again later."));
-        }
+    public ResponseEntity<ResponseDTO> registration(@Valid @RequestBody UserRegistrationDTO userRegistrationDTO) throws MessagingException {
+        userService.createNewUser(userRegistrationDTO);
+        return ResponseEntity.ok(new ResponseDTO("User was created successfully."));
     }
 
-    @GetMapping("/verification")
-    public ResponseEntity<String> emailVerification(@RequestParam("token") String token) {
-        if (userService.usersEmailVerification(token)) {
-            return ResponseEntity.ok("E-mail verified successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid verification token");
-        }
+    @GetMapping("/verify-email")
+    public ResponseEntity<ResponseDTO> verifyEmail(@RequestParam("token") String token) {
+        userService.setEmailVerified(token);
+        return ResponseEntity.ok(new ResponseDTO("Email was verified successfully."));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin(@RequestBody UserLoginDTO userLoginDTO){
-        if (userLoginDTO.getUsername().isEmpty() || userLoginDTO.getPassword().isEmpty()){
-            return ResponseEntity.badRequest().body(new ErrorDTO("Field username and/or field password was empty!"));
-        }
-        if (!userService.validateCredentials(userLoginDTO)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("Username and/or password was incorrect!"));
-        }
-        if (!userService.findByUsername(userLoginDTO.getUsername()).isUserVerified()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO("User is not verified, " +
-                    "please check your spam folder or click the 'Resend email verification' button"));
-        }
-
-        return ResponseEntity.ok().body(new JwtTokenDTO(userService.generateJwtToken(userLoginDTO.getUsername())));
+    public ResponseEntity<JwtTokenDTO> userLogin(@Valid @RequestBody UserLoginDTO userLoginDTO){
+        return ResponseEntity.ok(new JwtTokenDTO(userService.generateJwtToken(userLoginDTO)));
     }
 }

@@ -15,11 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)      // kind of token
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/weather", "/registration", "/login", "/verification", "/search").permitAll()
+                        .requestMatchers("weather/search", "user/registration", "user/login", "user/verification", "weather/search").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
         return http.build();

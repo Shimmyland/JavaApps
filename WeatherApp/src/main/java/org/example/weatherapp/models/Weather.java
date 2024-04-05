@@ -1,44 +1,48 @@
 package org.example.weatherapp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor      // pro Hibernate / Spring ?
 @Entity
+// @Builder + @AllArgsConstructor
+// @EqualsAndHashCode
+@Table(name = "weather")
 public class Weather {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    // db
-    @JsonIgnore         // used to ignore this field in /search endpoint, otherwise an infinitive loop occurs!
     @ManyToOne
     private User user;
 
-    // date when request is sent
-    private LocalDateTime localDateTime;
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
 
-    // stats
-    private String nameOfCity;
+    private String city;
     private String country;
     private double temperature;
     private String weather;
 
 
-    // custom constructor
-    public Weather(User user, String nameOfCity, String country, double temperature, String weather) {
+    public Weather(User user, String city, String country, double temperature, String weather) {
         this.user = user;
-        this.localDateTime = LocalDateTime.now();
-        this.nameOfCity = nameOfCity;
+        this.createAt = LocalDateTime.now();
+        this.city = city;
         this.country = country;
         this.temperature = temperature;
         this.weather = weather;

@@ -1,17 +1,8 @@
 package org.example.weatherapp.models.DTOs;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserLoginDTO {
-
-    // used as an input for user login
-
-    private String username;
-    private String password;
-
-}
+public record UserLoginDTO(
+        @NotEmpty(message = "Username is required.") String username,
+        @NotEmpty(message = "Password is required.") String password
+){}

@@ -1,44 +1,39 @@
 package org.example.weatherapp.controllers;
 
-import org.example.weatherapp.models.DTOs.*;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.weatherapp.models.DTOs.WeatherInputDTO;
+import org.example.weatherapp.models.DTOs.WeatherResponseDTO;
+import org.example.weatherapp.models.DTOs.WeatherListDTO;
 import org.example.weatherapp.services.WeatherService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.IOException;
+import java.util.UUID;
 
 
 @RestController
+@RequestMapping("/weather")
+@RequiredArgsConstructor
+@Validated
 public class WeatherController {
 
-    // dependencies
     private final WeatherService weatherService;
 
-    // constructor
-    @Autowired
-    public WeatherController(WeatherService weatherService) {
-        this.weatherService = weatherService;
+    @PostMapping("/search")
+    public ResponseEntity<WeatherResponseDTO> searchForWeather(@Valid @RequestBody WeatherInputDTO weatherInputDTO) throws IOException {
+        return ResponseEntity.ok(weatherService.createNewWeatherForecast(weatherInputDTO));
     }
 
-
-    // endpoints
-    @PostMapping("/weather")    // weather API search for a weather and saved in DB
-    public ResponseEntity<WeatherResponseDTO> getLocalWeather(@RequestBody WeatherInputDTO weatherInputDTO) throws Exception {
-        WeatherResponseDTO weatherResponseDTO = weatherService.findWeather(weatherInputDTO.getCity());
-        if (weatherResponseDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        weatherService.save(weatherResponseDTO, weatherInputDTO.getUserId());
-        return ResponseEntity.ok(weatherResponseDTO);
+    @GetMapping("/search")
+    public ResponseEntity<WeatherListDTO> listWeatherFromDatabase(@RequestParam(required = false, defaultValue = "") UUID userId){
+        return ResponseEntity.ok(weatherService.getSavedForecast(userId));
     }
 
-    @PostMapping("/search")     // weather search in DB (by name_of_city)
-    public ResponseEntity<?> searchInDatabase(@RequestParam (required = false, defaultValue = "") String query){
-        WeatherSearchDTO weatherSearchDTO = weatherService.searchForSavedWeathers(query);
-        if (weatherSearchDTO.getResults().isEmpty()){
-            return ResponseEntity.badRequest().body(new ErrorDTO("Weather with this query not found."));
-        } else {
-            return ResponseEntity.ok(weatherSearchDTO);
-        }
-    }
 }

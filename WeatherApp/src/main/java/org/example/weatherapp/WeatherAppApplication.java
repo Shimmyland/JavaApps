@@ -31,6 +31,6 @@ public class WeatherAppApplication implements CommandLineRunner {
 				"Libiger",
 				"simonlibiger@gmail.com"
 		);
-		userService.save(userRegistrationDTO);
+		userService.createNewUser(userRegistrationDTO);
 	}
 }

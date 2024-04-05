@@ -1,6 +1,5 @@
 package org.example.weatherapp;
 
-import jakarta.mail.MessagingException;
 import org.example.weatherapp.models.User;
 import org.example.weatherapp.repositories.UserRepository;
 import org.example.weatherapp.services.UserService;
@@ -9,11 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class WeatherAppApplicationTests {
 
 	@Autowired
