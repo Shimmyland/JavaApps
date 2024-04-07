@@ -1,4 +1,4 @@
-package org.example.weatherapp.exceptions;
+package org.example.weatherapp.exception;
 
 public class WeatherNotFoundException extends RuntimeException {
     public WeatherNotFoundException() {

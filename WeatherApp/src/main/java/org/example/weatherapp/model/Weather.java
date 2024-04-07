@@ -1,12 +1,10 @@
-package org.example.weatherapp.models;
+package org.example.weatherapp.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,19 +14,17 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor      // pro Hibernate / Spring ?
+@NoArgsConstructor
 @Entity
 // @Builder + @AllArgsConstructor
-// @EqualsAndHashCode
-@Table(name = "weather")
+// @EqualsAndHashCode   !
+// @ToString    !
+// @Table(name = "weather")
 public class Weather {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @ManyToOne
-    private User user;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;
@@ -39,8 +35,7 @@ public class Weather {
     private String weather;
 
 
-    public Weather(User user, String city, String country, double temperature, String weather) {
-        this.user = user;
+    public Weather(String city, String country, double temperature, String weather) {
         this.createAt = LocalDateTime.now();
         this.city = city;
         this.country = country;

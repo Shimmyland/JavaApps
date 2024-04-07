@@ -1,9 +1,9 @@
-package org.example.weatherapp.models.DTOs;
+package org.example.weatherapp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.weatherapp.models.Weather;
+import org.example.weatherapp.model.Weather;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -13,12 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class WeatherListDTO {
 
-    private String username;
     private List<WeatherDTO> result = new ArrayList<>();
-
-    public WeatherListDTO(String username) {
-        this.username = username;
-    }
 
     public void add(Weather weather) {
         WeatherDTO weatherDTO = new WeatherDTO(

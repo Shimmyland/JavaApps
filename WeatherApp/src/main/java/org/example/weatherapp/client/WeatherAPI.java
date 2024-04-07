@@ -1,7 +1,6 @@
-package org.example.weatherapp.clients;
+package org.example.weatherapp.client;
 
-import org.example.weatherapp.models.DTOs.WeatherResponseDTO;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.example.weatherapp.dto.WeatherResponseDTO;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

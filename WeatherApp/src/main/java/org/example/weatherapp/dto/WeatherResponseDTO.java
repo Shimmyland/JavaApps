@@ -1,4 +1,4 @@
-package org.example.weatherapp.models.DTOs;
+package org.example.weatherapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
