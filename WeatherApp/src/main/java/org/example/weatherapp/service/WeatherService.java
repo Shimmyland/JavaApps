@@ -5,7 +5,7 @@ import org.example.weatherapp.client.WeatherAPI;
 import org.example.weatherapp.exception.WeatherNotFoundException;
 import org.example.weatherapp.dto.WeatherResponseDTO;
 import org.example.weatherapp.dto.WeatherListDTO;
-import org.example.weatherapp.model.Weather;
+import org.example.weatherapp.entity.Weather;
 import org.example.weatherapp.repository.WeatherRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +47,7 @@ public class WeatherService {
     @Transactional(readOnly = true)
     public WeatherListDTO getWeatherBy(final String city) {
         List<Weather> result = weatherRepository.findTop100ByCityContainingOrderByCreateAt(city);
-        if (result == null){    // null or empty
+        if (result == null){
             throw new WeatherNotFoundException();
         }
 

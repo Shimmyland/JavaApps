@@ -1,6 +1,6 @@
 package org.example.weatherapp.repository;
 
-import org.example.weatherapp.model.Weather;
+import org.example.weatherapp.entity.Weather;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

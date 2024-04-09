@@ -3,7 +3,7 @@ package org.example.weatherapp.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.weatherapp.model.Weather;
+import org.example.weatherapp.entity.Weather;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
