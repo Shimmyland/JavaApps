@@ -10,4 +10,9 @@ This repository is dedicaded to a small projects where i can demonstrate my skil
 
 
 ## Weather App
-🚧 Currently a work in progress
+REST API application where you can ask for a weather based on a location (city) and store them in database from a [Open Weather map](https://api.openweathermap.org/).
+
+
+<!--
+
+-->
