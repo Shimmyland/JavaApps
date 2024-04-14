@@ -3,32 +3,30 @@ package org.example.usersetup.controller;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.example.usersetup.dto.JwtTokenDTO;
 import org.example.usersetup.dto.ResponseDTO;
 import org.example.usersetup.dto.UserSignUpDTO;
 import org.example.usersetup.dto.UserSignInDTO;
 import org.example.usersetup.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
-// @Validated                      // can be used BindingResult (contains errors based on @RequestBody entity)
+@RequiredArgsConstructor            // can be used BindingResult (contains errors based on @RequestBody entity)
 public class UserController {
 
     private final UserService userService;
 
+    @SneakyThrows
     @PostMapping("/user-sign-up")
-    public ResponseEntity<ResponseDTO> userSignUp(@Valid @RequestBody final UserSignUpDTO userSignUpDTO) throws MessagingException {
+    public ResponseEntity<ResponseDTO> userSignUp(@Valid @RequestBody final UserSignUpDTO userSignUpDTO) {
         userService.CreateUser(userSignUpDTO);
         return ResponseEntity.ok(new ResponseDTO("User creation was successful."));
     }
@@ -43,5 +41,7 @@ public class UserController {
         userService.setUsersToken(token);
         return ResponseEntity.ok(new ResponseDTO("Email was verified successfully."));
     }
+
+
 
 }

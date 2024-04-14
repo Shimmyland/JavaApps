@@ -32,14 +32,13 @@ public class Weather {
     private String city;
     private String country;
     private double temperature;
-    private String weather;
+    private String forecast;
 
-
-    public Weather(String city, String country, double temperature, String weather) {
+    public Weather(String city, String country, double temperature, String forecast) {
         this.createAt = LocalDateTime.now();
         this.city = city;
         this.country = country;
         this.temperature = temperature;
-        this.weather = weather;
+        this.forecast = forecast;
     }
 }

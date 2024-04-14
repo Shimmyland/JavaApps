@@ -2,10 +2,9 @@ package org.example.weatherapp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.example.weatherapp.dto.WeatherInputDTO;
-import org.example.weatherapp.dto.WeatherResponseDTO;
-import org.example.weatherapp.dto.WeatherListDTO;
+import org.example.weatherapp.dto.InputDto;
+import org.example.weatherapp.dto.WeatherResponseDto;
+import org.example.weatherapp.dto.WeatherListDto;
 import org.example.weatherapp.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +24,12 @@ public class WeatherController {
 
     // @SneakyThrows
     @PostMapping("/search")
-    public ResponseEntity<WeatherResponseDTO> searchForWeather(@Valid @RequestBody final WeatherInputDTO weatherInputDTO) {
-        return ResponseEntity.ok(weatherService.createNewWeatherForecast(weatherInputDTO.city()));
+    public ResponseEntity<WeatherResponseDto> searchForWeather(@Valid @RequestBody final InputDto inputDto) {
+        return ResponseEntity.ok(weatherService.createNewWeatherForecast(inputDto.city()));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<WeatherListDTO> listWeatherFromDatabase(@RequestParam(required = false, defaultValue = "") final String city){
+    public ResponseEntity<WeatherListDto> listWeatherFromDatabase(@RequestParam(required = false, defaultValue = "") final String city){
         return ResponseEntity.ok(weatherService.getWeatherBy(city));
     }
 

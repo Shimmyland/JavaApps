@@ -6,6 +6,7 @@ import org.example.usersetup.dto.UserSignInDTO;
 import org.example.usersetup.dto.UserSignUpDTO;
 import org.example.usersetup.entity.Role;
 import org.example.usersetup.entity.User;
+import org.example.usersetup.exception.InputInUserException;
 import org.example.usersetup.exception.UserNotFoundException;
 import org.example.usersetup.exception.UserNotVerifiedException;
 import org.example.usersetup.repository.UserRepository;
@@ -42,13 +43,16 @@ public class UserServiceImp implements UserService {
 
     @Override
     public void usernameInUse(final String username) {    // boolean / exception?
-        userRepository.existsByUsername(username);
-
+        if (userRepository.existsByUsername(username)){
+            throw new InputInUserException("Username is already in use.");
+        }
     }
 
     @Override
     public void emailInUser(final String email) {         // boolean / exception?
-        userRepository.existsByEmail(email);
+        if (userRepository.existsByEmail(email)){
+            throw new InputInUserException("Email is already in use.");
+        }
     }
 
 

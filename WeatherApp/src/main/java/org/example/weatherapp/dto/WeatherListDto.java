@@ -11,24 +11,24 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class WeatherListDTO {
+public class WeatherListDto {
 
-    private List<WeatherDTO> result = new ArrayList<>();
+    private List<WeatherDto> result = new ArrayList<>();
 
     public void add(Weather weather) {
-        WeatherDTO weatherDTO = new WeatherDTO(
+        WeatherDto weatherDTO = new WeatherDto(
                 weather.getCreateAt(),
                 weather.getCity(),
                 weather.getCountry(),
                 weather.getTemperature(),
-                weather.getWeather()
+                weather.getForecast()
         );
         this.result.add(weatherDTO);
     }
 
     @Data
     @AllArgsConstructor
-    public static class WeatherDTO {
+    public static class WeatherDto {
         private LocalDateTime createAt;
         private String city;
         private String country;

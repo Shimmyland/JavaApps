@@ -4,7 +4,7 @@ import org.example.weatherapp.client.WeatherAPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Configuration
 public class ClientApiConfig {
@@ -13,7 +13,7 @@ public class ClientApiConfig {
     public Retrofit retrofit() {
         return new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/data/2.5/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(JacksonConverterFactory.create())
                 .build();
     }
 
