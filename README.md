@@ -1,5 +1,5 @@
 # Welcome! 👋🏻
-This repository is dedicaded to a small projects where i can demonstrate my skills.
+This repository is dedicated to small projects where I can demonstrate what I've learned so far.
 
 ## Project Movie Rental
 🚧 Currently a work in progress
