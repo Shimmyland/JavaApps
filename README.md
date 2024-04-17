@@ -1,6 +1,9 @@
 # Welcome! 👋🏻
 This repository is dedicated to small projects written in Java where I can demonstrate what I've learned so far.
 
+## Exchange Rates
+🚧 Currently a work in progress
+
 ## Project Movie Rental
 🚧 Currently a work in progress
 
