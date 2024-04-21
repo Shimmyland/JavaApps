@@ -17,4 +17,6 @@ public class ClientApiConfig {
                 .build();
         return retrofit.create(ClientApi.class);
     }
+
+    // url do properties nebo nekam also ten name je obecnej (setApi?)
 }

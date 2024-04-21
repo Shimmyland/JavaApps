@@ -18,11 +18,8 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import static org.assertj.core.api.Fail.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -32,6 +29,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {
 
+    // unit or integration - for service
     @Mock
     WeatherRepository weatherRepository;
 
@@ -64,43 +62,35 @@ class WeatherServiceTest {
 
     @Test
     void testCreateNewWeatherForecast_WeatherNotFound_404() throws IOException {
-        // Arrange
         String city = "NonExistentCity";
         var request = Mockito.mock(Call.class);
         when(weatherAPI.weatherRequest(anyString(), anyString())).thenReturn(request);
         Response<WeatherResponseDto> response = Response.error(404, mock(ResponseBody.class));
         when(request.execute()).thenReturn(response);
 
-        // Assert
         assertThrows(WeatherNotFoundException.class, () -> weatherService.createNewWeatherForecast(city));
     }
 
     @Test
     void testCreateNewWeatherForecast_WeatherNotFound_Null() throws IOException {
-        // Arrange
         String city = "NonExistentCity";
         var request = Mockito.mock(Call.class);
 
-        // Act
         when(weatherAPI.weatherRequest(anyString(), anyString())).thenReturn(request);
         Response<WeatherResponseDto> response = Response.success(null);
         when(request.execute()).thenReturn(response);
 
-        // Assert
         assertThrows(WeatherNotFoundException.class, () -> weatherService.createNewWeatherForecast(city));
     }
 
     @Test
     void testCreateNewWeatherForecast_IOException() throws IOException {
-        // Arrange
         String city = "NonExistentCity";
         var request = Mockito.mock(Call.class);
 
-        // Act
         when(weatherAPI.weatherRequest(anyString(), anyString())).thenReturn(request);
         when(request.execute()).thenThrow(new IOException());
 
-        // Assert
         assertThrows(WeatherNotFoundException.class, () -> weatherService.createNewWeatherForecast(city));
     }
 
