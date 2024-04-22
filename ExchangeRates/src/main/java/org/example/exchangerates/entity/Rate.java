@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,6 +20,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
+@ToString(of = "id")
 @Table(name = "rate")
 public class Rate {
 
@@ -33,14 +37,15 @@ public class Rate {
 
     @ManyToOne
     @JoinColumn (name = "base_currency_id")
-    private Cur baseCurrency;
+    private Currency baseCurrency;
 
     @ManyToOne
     @JoinColumn(name = "currency_id")
-    private Cur currency;
+    private Currency currency;
+
     private double price;
 
-    public Rate(LocalDate fromDate, Cur baseCurrency, Cur currency, double price) {
+    public Rate(LocalDate fromDate, Currency baseCurrency, Currency currency, double price) {
         this.fromDate = fromDate;
         this.savedAt = LocalDateTime.now();
         this.baseCurrency = baseCurrency;

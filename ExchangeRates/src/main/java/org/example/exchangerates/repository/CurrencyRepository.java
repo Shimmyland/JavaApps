@@ -1,17 +1,23 @@
 package org.example.exchangerates.repository;
 
-import org.example.exchangerates.entity.Cur;
+import org.example.exchangerates.entity.Currency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public interface CurrencyRepository extends JpaRepository<Cur, UUID> {
+public interface CurrencyRepository extends JpaRepository<Currency, UUID> {
 
-    Optional<Cur> findByCode(String code);
+    Optional<Currency> findByCode(String code);
 
-    @Query("SELECT code FROM Cur code")
+    @Query(value = "SELECT code FROM currency", nativeQuery = true)
     Set<String> findAllCodes();
 
+    @Query(value = "SELECT * FROM currency", nativeQuery = true)
+    List<Currency> findAllCurrencies();
+
+    @Query(value = "SELECT * FROM currency WHERE type = ?1", nativeQuery = true)
+    List<Currency> findAllByType(String type);
 }

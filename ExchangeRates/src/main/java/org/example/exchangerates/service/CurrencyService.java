@@ -1,10 +1,11 @@
 package org.example.exchangerates.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.exchangerates.client.ClientApi;
-import org.example.exchangerates.dto.CurrencyDto;
-import org.example.exchangerates.dto.ListOfCurrenciesDto;
-import org.example.exchangerates.entity.Cur;
+import lombok.extern.slf4j.Slf4j;
+import org.example.exchangerates.client.CurrencyApiClient;
+import org.example.exchangerates.config.properties.CurrencyApiProperties;
+import org.example.exchangerates.dto.CurrenciesDto;
+import org.example.exchangerates.entity.Currency;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.CurrencyRepository;
 import org.springframework.stereotype.Service;
@@ -12,49 +13,88 @@ import org.springframework.transaction.annotation.Transactional;
 import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CurrencyService {
 
     private final CurrencyRepository currencyRepository;
-    private final ClientApi clientApi;
-    private static final String API_KEY = System.getenv().get("apiKey");
+    private final CurrencyApiClient currencyApiClient;
+    private final CurrencyApiProperties currencyApiProperties;
 
-    protected Cur findCurrency(String codeOfCurrency){
-        Optional<Cur> tmp = currencyRepository.findByCode(codeOfCurrency);
-        return tmp.orElseThrow(() -> new NotFoundException("Currency not found"));
+    Currency findCurrencyBy(final String code){
+       return currencyRepository.findByCode(code).orElseThrow(() -> new NotFoundException("Currency not found."));
     }
+
     @Transactional
-    public ListOfCurrenciesDto createNewCurrencies() {
-        Call<ListOfCurrenciesDto> request = clientApi.getAllCurrencies(API_KEY);
+    public int setNewCurrencies() {
+        Call<CurrenciesDto> request = currencyApiClient.getAllCurrencies(currencyApiProperties.getAccessKey());
 
         try {
-            Response<ListOfCurrenciesDto> response = request.execute();
+            Response<CurrenciesDto> response = request.execute();
             if (!response.isSuccessful() || response.body() == null) {
                 throw new NotFoundException("Currency not found.");
             }
-            ListOfCurrenciesDto currencies = response.body();
+            CurrenciesDto currencies = response.body();
 
             Set<String> existingCodes = currencyRepository.findAllCodes();
+            int count = currencies.data().size();
             for (String key : currencies.data().keySet()) {
                 if (existingCodes.contains(key)){
+                    count--;
                     continue;
                 }
-                CurrencyDto tmp = currencies.data().get(key);
-                currencyRepository.save(new Cur(
-                        tmp.getCode(),
-                        tmp.getName(),
-                        tmp.getSymbol(),
-                        tmp.getType()
+                CurrenciesDto.CurrencyDto tmp = currencies.data().get(key);
+                currencyRepository.save(new Currency(
+                        tmp.code(),
+                        tmp.name(),
+                        tmp.symbol(),
+                        tmp.type()
                 ));
             }
-            return currencies;
-
+            return count;
         } catch (IOException e) {
             throw new NotFoundException("Something with IO." + e.getMessage());
         }
     }
+
+    CurrenciesDto modelData(final List<Currency> currencies){
+        HashMap<String, CurrenciesDto.CurrencyDto> currenciesMap = new HashMap<>();
+        for (Currency currency : currencies){
+            CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
+                    currency.getCode(),
+                    currency.getName(),
+                    currency.getSymbol(),
+                    currency.getType()
+            );
+            currenciesMap.put(currency.getCode(), currencyDto);
+        }
+        return new CurrenciesDto(currenciesMap);
+    }
+
+
+    @Transactional(readOnly = true)
+    public CurrenciesDto getAllCurrencies(){
+        List<Currency> currencies = currencyRepository.findAllCurrencies();
+        return modelData(currencies);
+    }
+
+    @Transactional(readOnly = true)
+    public CurrenciesDto getSpecificCurrency(final String code){
+        List<Currency> currencies = new ArrayList<>();
+        currencies.add(findCurrencyBy(code));
+        return modelData(currencies);
+    }
+
+    @Transactional(readOnly = true)
+    public CurrenciesDto getCurrenciesBy(final String type){
+        List<Currency> currencies = currencyRepository.findAllByType(type);
+        return modelData(currencies);
+    }
+
 }

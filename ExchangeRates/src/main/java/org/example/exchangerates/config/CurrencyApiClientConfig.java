@@ -1,22 +1,25 @@
 package org.example.exchangerates.config;
 
-import org.example.exchangerates.client.ClientApi;
+import lombok.RequiredArgsConstructor;
+import org.example.exchangerates.client.CurrencyApiClient;
+import org.example.exchangerates.config.properties.CurrencyApiProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 @Configuration
-public class ClientApiConfig {
+@RequiredArgsConstructor
+public class CurrencyApiClientConfig {
+
+    private final CurrencyApiProperties currencyApiProperties;
 
     @Bean
-    public ClientApi clientApi(){
+    public CurrencyApiClient currencyApiClient(){
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.currencyapi.com/")             // https://fixer.io/documentation
+                .baseUrl(currencyApiProperties.getBaseUrl())
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
-        return retrofit.create(ClientApi.class);
+        return retrofit.create(CurrencyApiClient.class);
     }
-
-    // url do properties nebo nekam also ten name je obecnej (setApi?)
 }

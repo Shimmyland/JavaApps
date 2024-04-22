@@ -15,17 +15,18 @@ public class RateScheduler {
     private final RateService rateService;
     private final RateRepository rateRepository;
 
+    // https://www.baeldung.com/slf4j-with-log4j2-logback
+    // https://spring.io/guides/gs/scheduling-tasks
+    // https://www.baeldung.com/spring-scheduled-tasks
+    // (sec min hour dayOfMonth month dayOfWeek), practice - https://crontab.guru
 
-    @Scheduled(cron = "0 1 * * * 1-5")   // (sec min hour dayOfMonth month dayOfWeek), practice - https://crontab.guru
+    @Scheduled(cron = "${rate.scheduler.refreshRates.cron}")
     public void refreshRates(){
-        rateService.getRates("CZK", null, null);  // try-catch
+        try {
+            rateService.setRates("CZK", null, null);
+            log.info("You have {} rates saved in database.", rateRepository.count());
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
     }
-
-    @Scheduled(cron = "1 * * * * *") // every minute
-    public void refreshNumberOfRates(){
-        long count = rateRepository.count();
-        log.info("You have {} rates saved in database.", count);
-    }
-
-
 }

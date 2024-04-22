@@ -9,18 +9,15 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Query;
 
-public interface ClientApi {
-
-    // private static final String API_KEY = System.getenv().get("apiKey");
+public interface CurrencyApiClient {
 
     @GET("v3/currencies")
-    Call<CurrenciesDto> getAllCurrencies(@Header("apikey") String apiKey);
+    Call<CurrenciesDto> getAllCurrencies(@Header("apikey") final String apiKey);
 
     @GET("v3/latest")
-    Call<RatesDto> getAllRates(@Header("apikey") String apiKey,
-                               @NotNull @Query("base_currency") String baseCurrency,
-                               @Nullable @Query("currencies") String currencies,
-                               @Nullable @Query("type") String type);
+    Call<RatesDto> getAllRates(@Header("apikey") final String apiKey,
+                               @NotNull @Query("base_currency") final String baseCurrency,
+                               @Nullable @Query("currencies") final String currencies,
+                               @Nullable @Query("type") final String type);
 
-    // code overloading - nefunguje mi to, potřebuju dvě varianty, kdy mám vždy dvě query
 }

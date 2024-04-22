@@ -1,10 +1,12 @@
 package org.example.exchangerates.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.exchangerates.dto.ListOfCurrenciesDto;
+import org.example.exchangerates.dto.CurrenciesDto;
+import org.example.exchangerates.exception.InvalidInputException;
 import org.example.exchangerates.service.CurrencyService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,9 +17,24 @@ public class CurrencyController {
 
     private final CurrencyService currencyService;
 
-    @PostMapping("") // https://currencyapi.com/docs/currencies
-    public ResponseEntity<ListOfCurrenciesDto> getAllCurrencies(){
-        return ResponseEntity.ok(currencyService.createNewCurrencies());
+    // https://currencyapi.com/docs/currencies
+
+    @GetMapping("/all")
+    public ResponseEntity<CurrenciesDto> getAllCurrencies(){
+        return ResponseEntity.ok(currencyService.getAllCurrencies());
+    }
+
+    @GetMapping("/{code}")
+    public ResponseEntity<CurrenciesDto> getCurrencyByCode(@PathVariable final String code){
+        return ResponseEntity.ok(currencyService.getSpecificCurrency(code));
+    }
+
+    @GetMapping("/type/{type}")
+    public ResponseEntity<CurrenciesDto> getCurrenciesByType(@PathVariable final String type){
+        if (!type.equals("fiat") && !type.equals("crypto") && !type.equals("metal")){
+            throw new InvalidInputException("Invalid input type. It has to be 'fiat', 'crypto' or 'metal'.");
+        }
+        return ResponseEntity.ok(currencyService.getCurrenciesBy(type));
     }
 
 }

@@ -1,10 +1,11 @@
 package org.example.exchangerates.service;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import org.example.exchangerates.client.ClientApi;
-import org.example.exchangerates.dto.ListOfRatesDto;
-import org.example.exchangerates.entity.Cur;
+import lombok.extern.slf4j.Slf4j;
+import org.example.exchangerates.client.CurrencyApiClient;
+import org.example.exchangerates.config.properties.CurrencyApiProperties;
+import org.example.exchangerates.dto.RatesDto;
+import org.example.exchangerates.entity.Currency;
 import org.example.exchangerates.entity.Rate;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.RateRepository;
@@ -14,47 +15,45 @@ import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RateService {
 
     private final CurrencyService currencyService;
     private final RateRepository rateRepository;
-    private final ClientApi clientApi;
-    private static final String API_KEY = System.getenv().get("apiKey");
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
+    private final CurrencyApiClient currencyApiClient;
+    private final CurrencyApiProperties currencyApiProperties;
 
     @Transactional
-    public ListOfRatesDto getRates(String codeOfBaseCurrency,
-                                   @Nullable String codeOfCurrencies,
-                                   @Nullable String typeOfCurrencies) {
+    public RatesDto setRates(final String codeOfBaseCurrency, final String codeOfCurrencies, final String typeOfCurrencies) {
 
-        Call<ListOfRatesDto> request = clientApi.getAllRates(API_KEY, codeOfBaseCurrency, codeOfCurrencies, typeOfCurrencies);
+        Call<RatesDto> request = currencyApiClient.getAllRates(currencyApiProperties.getAccessKey(), codeOfBaseCurrency, codeOfCurrencies, typeOfCurrencies);
+
         try {
-            Response<ListOfRatesDto> result = request.execute();
-            if (!result.isSuccessful() || result.body() == null) {  // StringUtils.isBlank(result.body()) ?
-                throw new NotFoundException("Rates not found.");
+            Response<RatesDto> result = request.execute();
+            if (!result.isSuccessful() || result.body() == null) {
+                throw new NotFoundException("Rates not found based on the request.");
             }
-            ListOfRatesDto listOfRatesDto = result.body();
+            RatesDto ratesDto = result.body();
 
-            LocalDate dateTime = LocalDate.parse(listOfRatesDto.meta().get("last_updated_at"), DATE_TIME_FORMATTER);
-            Cur baseCurrency = currencyService.findCurrency(codeOfBaseCurrency);
-            for (String key : listOfRatesDto.data().keySet()) {
-                if (key.equals(codeOfBaseCurrency)){
+            LocalDate dateTime = LocalDate.parse(ratesDto.meta().get("last_updated_at").substring(0,10));
+            Currency baseCurrency = currencyService.findCurrencyBy(codeOfBaseCurrency.toUpperCase());
+
+            for (String key : ratesDto.data().keySet()) {
+                if (key.equals(codeOfBaseCurrency) || rateRepository.existsByParams(codeOfBaseCurrency, key, dateTime)){
                     continue;
                 }
-                Cur currencies = currencyService.findCurrency(listOfRatesDto.data().get(key).code());
+                Currency currencies = currencyService.findCurrencyBy(ratesDto.data().get(key).code());
                 rateRepository.save(new Rate(
                         dateTime,
                         baseCurrency,
                         currencies,
-                        listOfRatesDto.data().get(key).value()
+                        ratesDto.data().get(key).value()
                 ));
             }
-            return listOfRatesDto;
+            return ratesDto;
         } catch (IOException e) {
             throw new NotFoundException("IO ERROR:" + e.getMessage());
         }

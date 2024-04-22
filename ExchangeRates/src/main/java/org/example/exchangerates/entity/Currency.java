@@ -18,10 +18,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")   // před savem do DB je id null!, https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/
+@EqualsAndHashCode(of = "id")   // before save into DB is id null!, https://jpa-buddy.com/blog/hopefully-the-final-article-about-equals-and-hashcode-for-jpa-entities-with-db-generated-ids/
 @ToString(of = {"id", "code"})
 @Table(name = "currency")
-public class Cur {
+public class Currency {
 
     @Id
     @GeneratedValue (strategy = GenerationType.UUID)
@@ -31,13 +31,13 @@ public class Cur {
     private String symbol;
     private String type;
 
-    @OneToMany(mappedBy = "baseCur")
+    @OneToMany(mappedBy = "baseCurrency")
     private List<Rate> baseCurrencyRates;
-    @OneToMany(mappedBy = "cur")
+    @OneToMany(mappedBy = "currency")
     private List<Rate> currencyRates;
 
 
-    public Cur(String code, String name, String symbol, String type) {
+    public Currency(String code, String name, String symbol, String type) {
         this.code = code;
         this.name = name;
         this.symbol = symbol;
