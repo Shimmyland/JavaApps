@@ -27,7 +27,7 @@ public class UserController {
     @SneakyThrows
     @PostMapping("/user-sign-up")
     public ResponseEntity<ResponseDTO> userSignUp(@Valid @RequestBody final UserSignUpDTO userSignUpDTO) {
-        userService.CreateUser(userSignUpDTO);
+        userService.createUser(userSignUpDTO);
         return ResponseEntity.ok(new ResponseDTO("User creation was successful."));
     }
 

@@ -11,7 +11,7 @@ public interface UserService {
     User getUserByToken(final String token);
     void usernameInUse(final String username);
     void emailInUser(final String email);
-    void CreateUser(final UserSignUpDTO userSignUpDTO) throws MessagingException;
+    void createUser(final UserSignUpDTO userSignUpDTO) throws MessagingException;
     String verifyUsersCredentials(final UserSignInDTO userSignInDTO);
     void setUsersToken(final String token);
 }

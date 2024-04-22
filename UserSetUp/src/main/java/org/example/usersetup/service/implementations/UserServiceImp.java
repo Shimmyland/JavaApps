@@ -58,7 +58,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void CreateUser(final UserSignUpDTO userSignUpDTO) throws MessagingException {
+    public void createUser(final UserSignUpDTO userSignUpDTO) throws MessagingException {
         usernameInUse(userSignUpDTO.getUsername());
 
         emailInUser(userSignUpDTO.getEmail());
