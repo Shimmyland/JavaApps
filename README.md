@@ -13,5 +13,5 @@ Simple REST API application dedicated to user settings. It involves creation, va
 
 
 ## Weather App
-REST API application where you can ask for a weather based on a location (city) and store them in database from a [Open Weather map](https://api.openweathermap.org/).
+REST API application where you can ask for a weather based on a location (city) and store it into a database from the [Open Weather map](https://api.openweathermap.org/).
 
