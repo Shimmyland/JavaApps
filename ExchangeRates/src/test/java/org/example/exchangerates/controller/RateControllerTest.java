@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,9 +36,23 @@ class RateControllerTest {
         requestParams.put("currencies", "EUR,GBP");
         requestParams.put("type", "fiat");
 
-        mockMvc.perform(post("/latest")
+        mockMvc.perform(post("/rates/latest")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(op.writeValueAsString(requestParams)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getRates_successful() throws Exception {
+        HashMap<String, String> requestParams = new HashMap<>();
+        requestParams.put("base_currency", "USD");
+        requestParams.put("type", "fiat");
+        requestParams.put("date", "2024-04-23");
+
+        mockMvc.perform(get("/rates/history")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(op.writeValueAsString(requestParams)))
+                .andExpect(status().isOk());
+
     }
 }

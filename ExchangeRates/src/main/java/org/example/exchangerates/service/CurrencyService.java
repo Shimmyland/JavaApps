@@ -8,6 +8,8 @@ import org.example.exchangerates.dto.CurrenciesDto;
 import org.example.exchangerates.entity.Currency;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.CurrencyRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import retrofit2.Call;
@@ -64,7 +66,7 @@ public class CurrencyService {
     }
 
     CurrenciesDto modelData(final List<Currency> currencies){
-        HashMap<String, CurrenciesDto.CurrencyDto> currenciesMap = new HashMap<>();
+        HashMap<String, CurrenciesDto.CurrencyDto> data = new HashMap<>();
         for (Currency currency : currencies){
             CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
                     currency.getCode(),
@@ -72,11 +74,17 @@ public class CurrencyService {
                     currency.getSymbol(),
                     currency.getType()
             );
-            currenciesMap.put(currency.getCode(), currencyDto);
+            data.put(currency.getCode(), currencyDto);
         }
-        return new CurrenciesDto(currenciesMap);
+        return new CurrenciesDto(data);
     }
 
+    @Transactional(readOnly = true)
+    public CurrenciesDto getCurrenciesByPage(final int page){
+        PageRequest pr = PageRequest.of(page, 10);
+        List<Currency> tmpList = currencyRepository.findAllBy(pr).getContent();
+        return modelData(tmpList);
+    }
 
     @Transactional(readOnly = true)
     public CurrenciesDto getAllCurrencies(){

@@ -1,6 +1,8 @@
 package org.example.exchangerates.repository;
 
 import org.example.exchangerates.entity.Currency;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.List;
@@ -20,4 +22,6 @@ public interface CurrencyRepository extends JpaRepository<Currency, UUID> {
 
     @Query(value = "SELECT * FROM currency WHERE type = ?1", nativeQuery = true)
     List<Currency> findAllByType(String type);
+
+    Page<Currency> findAllBy(Pageable pageable);
 }

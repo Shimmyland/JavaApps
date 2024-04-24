@@ -14,9 +14,9 @@ public class CurrencyScheduler {
     private final CurrencyService currencyService;
 
     @PostConstruct          // "used on a method that needs to be executed after dependency injection is done to perform any initialization"
-    public void init() {
+    public void init() {    // change it and use commandLineRunner
         try {
-            log.info("Currencies added into the DB: {}, request was successful.", currencyService.setNewCurrencies());
+            log.info("INIT: Currencies added into the DB: {}, request was successful.", currencyService.setNewCurrencies());
         } catch (Exception e){
             log.error("THERE IS AN ISSUE WITH SAVING CURRENCIES: " + e.getMessage());
         }

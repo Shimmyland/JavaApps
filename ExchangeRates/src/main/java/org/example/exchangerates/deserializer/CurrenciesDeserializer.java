@@ -20,7 +20,6 @@ public class CurrenciesDeserializer extends StdDeserializer<CurrenciesDto> {
         HashMap<String, CurrenciesDto.CurrencyDto> data = new HashMap<>();
 
         node.get("data").fields().forEachRemaining(entry -> {
-
             CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
                     entry.getValue().get("code").asText(),
                     entry.getValue().get("name").asText(),

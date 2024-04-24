@@ -1,7 +1,5 @@
 package org.example.exchangerates.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,11 +19,18 @@ class CurrencyControllerTest {
     MockMvc mockMvc;
 
     @Test
+    void getCurrenciesByPage() throws Exception {
+        mockMvc.perform(get("/currencies")
+                        .param("page", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").exists());
+    }
+
+    @Test
     void getAllCurrencies_successful() throws Exception {
         mockMvc.perform(get("/currencies/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").exists());
-        // Add more assertions as needed
     }
 
     @Test
