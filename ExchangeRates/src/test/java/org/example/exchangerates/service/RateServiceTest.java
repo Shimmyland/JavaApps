@@ -4,6 +4,7 @@ import org.example.exchangerates.client.CurrencyApiClient;
 import org.example.exchangerates.config.properties.CurrencyApiProperties;
 import org.example.exchangerates.dto.RatesDto;
 import org.example.exchangerates.entity.Currency;
+import org.example.exchangerates.entity.Rate;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.RateRepository;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,11 @@ import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,4 +88,46 @@ class RateServiceTest {
 
         assertThrows(NotFoundException.class, () -> rateService.setRates("TEST1", "TEST2", "TEST3"));
     }
+
+    @Test
+    void getRates_successful_allParams() {
+        List<Rate> mockedRates = new ArrayList<>();
+        Rate rate1 = new Rate(
+                LocalDate.ofEpochDay(2024-04-23),
+                new Currency("CZK", "testing", "kč", "fiat"),
+                new Currency("USD", "testing", "us", "fiat"),
+                1
+        );
+        Rate rate2 = new Rate(
+                LocalDate.ofEpochDay(2024-04-23),
+                new Currency("CZK", "testing", "kč", "fiat"),
+                new Currency("EUR", "testing", "eu", "fiat"),
+                2
+        );
+        mockedRates.add(rate1);
+        mockedRates.add(rate2);
+
+        HashMap<String, RatesDto.RateDto> data = new HashMap<>();
+        RatesDto.RateDto rateDto = new RatesDto.RateDto("USD", 1);
+        data.put("USD", rateDto);
+        RatesDto.RateDto rateDto1 = new RatesDto.RateDto("EUR", 2);
+        data.put("EUR", rateDto1);
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("from_date","2024-04-23");
+        meta.put("base_currency", "CZK");
+        RatesDto mockedResult = new RatesDto(meta, data);
+
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(mockedRates);
+
+        assertEquals(mockedResult, rateService.getRates("CZK", "fiat", "2024-04-23"));
+    }
+
+    @Test
+    void getRates_successful_ratesNotFound(){
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(Collections.emptyList());
+
+        assertThrows(NotFoundException.class, () -> rateService.getRates("CZK", "fiat", "2024-04-23"));
+    }
+
+
 }

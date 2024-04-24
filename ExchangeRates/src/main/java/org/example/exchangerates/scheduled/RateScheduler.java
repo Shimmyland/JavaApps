@@ -23,7 +23,8 @@ public class RateScheduler {
     @Scheduled(cron = "${rate.scheduler.refreshRates.cron}")
     public void refreshRates(){
         try {
-            rateService.setRates("CZK", null, null);
+            rateService.setRates("CZK", "EUR,USD", null);
+            rateService.setRates("USD", null, null);
             log.info("You have {} rates saved in database.", rateRepository.count());
         } catch (Exception e){
             log.error(e.getMessage());
