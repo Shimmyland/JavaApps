@@ -81,15 +81,13 @@ public class CurrencyService {
 
     @Transactional(readOnly = true)
     public CurrenciesDto getCurrenciesByPage(final int page){
-        PageRequest pr = PageRequest.of(page, 10);
-        List<Currency> tmpList = currencyRepository.findAllBy(pr).getContent();
+        List<Currency> tmpList = currencyRepository.findAllBy(PageRequest.of(page, 10)).getContent();
         return modelData(tmpList);
     }
 
     @Transactional(readOnly = true)
     public CurrenciesDto getAllCurrencies(){
-        List<Currency> currencies = currencyRepository.findAllCurrencies();
-        return modelData(currencies);
+        return modelData(currencyRepository.findAllCurrencies());
     }
 
     @Transactional(readOnly = true)
@@ -101,8 +99,7 @@ public class CurrencyService {
 
     @Transactional(readOnly = true)
     public CurrenciesDto getCurrenciesBy(final String type){
-        List<Currency> currencies = currencyRepository.findAllByType(type);
-        return modelData(currencies);
+        return modelData(currencyRepository.findAllByType(type));
     }
 
 }
