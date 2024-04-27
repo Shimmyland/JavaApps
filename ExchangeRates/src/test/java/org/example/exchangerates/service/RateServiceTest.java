@@ -55,7 +55,7 @@ class RateServiceTest {
         HashMap<String, RatesDto.RateDto> mockedData = new HashMap<>();
         mockedData.put("TEST", new RatesDto.RateDto("TEST", 1.0));
         RatesDto mockedResponse = new RatesDto(mockedMeta, mockedData);
-        Currency mockedCurrency = new Currency("TEST", "Testing currency", "Test", "virtual");
+        Currency mockedCurrency = Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build();
 
         when(currencyApiProperties.getAccessKey()).thenReturn("testAccessKey");
         when(currencyApiClient.getAllRates(anyString(), anyString(), anyString(), anyString())).thenReturn(request);
@@ -92,18 +92,18 @@ class RateServiceTest {
     @Test
     void getRates_successful_allParams() {
         List<Rate> mockedRates = new ArrayList<>();
-        Rate rate1 = new Rate(
-                LocalDate.ofEpochDay(2024-04-23),
-                new Currency("CZK", "testing", "kč", "fiat"),
-                new Currency("USD", "testing", "us", "fiat"),
-                1
-        );
-        Rate rate2 = new Rate(
-                LocalDate.ofEpochDay(2024-04-23),
-                new Currency("CZK", "testing", "kč", "fiat"),
-                new Currency("EUR", "testing", "eu", "fiat"),
-                2
-        );
+        Rate rate1 = Rate.builder()
+                .fromDate(LocalDate.ofEpochDay(2024 - 04 - 23))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("USD").name("testing").symbol("us").type("fiat").build())
+                .price(1)
+                .build();
+        Rate rate2 = Rate.builder()
+                .fromDate(LocalDate.ofEpochDay(2024 - 04 - 23))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("EUR").name("testing").symbol("eu").type("fiat").build())
+                .price(2)
+                .build();
         mockedRates.add(rate1);
         mockedRates.add(rate2);
 
@@ -113,7 +113,7 @@ class RateServiceTest {
         RatesDto.RateDto rateDto1 = new RatesDto.RateDto("EUR", 2);
         data.put("EUR", rateDto1);
         HashMap<String, String> meta = new HashMap<>();
-        meta.put("from_date","2024-04-23");
+        meta.put("from_date", "2024-04-23");
         meta.put("base_currency", "CZK");
         RatesDto mockedResult = new RatesDto(meta, data);
 
@@ -123,7 +123,7 @@ class RateServiceTest {
     }
 
     @Test
-    void getRates_successful_ratesNotFound(){
+    void getRates_successful_ratesNotFound() {
         when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(Collections.emptyList());
 
         assertThrows(NotFoundException.class, () -> rateService.getRates("CZK", "fiat", "2024-04-23"));

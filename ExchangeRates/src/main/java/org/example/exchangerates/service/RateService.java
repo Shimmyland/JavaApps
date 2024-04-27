@@ -8,7 +8,6 @@ import org.example.exchangerates.config.properties.CurrencyApiProperties;
 import org.example.exchangerates.dto.RatesDto;
 import org.example.exchangerates.entity.Currency;
 import org.example.exchangerates.entity.Rate;
-import org.example.exchangerates.exception.InvalidInputException;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.RateRepository;
 import org.springframework.stereotype.Service;
@@ -17,6 +16,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,19 +40,20 @@ public class RateService {
             }
             RatesDto ratesDto = result.body();
 
-            LocalDate dateTime = LocalDate.parse(ratesDto.meta().get("last_updated_at").substring(0,10));
+            LocalDate dateTime = LocalDate.parse(ratesDto.meta().get("last_updated_at").substring(0, 10));
             Currency currencyTmp = currencyService.findCurrencyBy(baseCurrency.toUpperCase());
 
             for (String key : ratesDto.data().keySet()) {
-                if (key.equals(baseCurrency) || rateRepository.existsByParams(baseCurrency, key, dateTime)){
+                if (key.equals(baseCurrency) || rateRepository.existsByParams(baseCurrency, key, dateTime)) {
                     continue;
                 }
-                rateRepository.save(new Rate(
-                        dateTime,
-                        currencyTmp,
-                        currencyService.findCurrencyBy(ratesDto.data().get(key).code()),
-                        ratesDto.data().get(key).value()
-                ));
+                rateRepository.save(Rate.builder()
+                        .fromDate(dateTime)
+                        .savedAt(LocalDateTime.now())
+                        .baseCurrency(currencyTmp)
+                        .currency(currencyService.findCurrencyBy(ratesDto.data().get(key).code()))
+                        .price(ratesDto.data().get(key).value())
+                        .build());
             }
             return ratesDto;
         } catch (IOException e) {
@@ -61,12 +62,12 @@ public class RateService {
     }
 
     @Transactional(readOnly = true)
-    public RatesDto getRates(final String baseCurrency, final String type, final String date){
+    public RatesDto getRates(final String baseCurrency, final String type, final String date) {
         LocalDate localDate = StringUtils.isBlank(date) ? rateRepository.findByFromDate() : LocalDate.parse(date);
         List<Rate> tmp = StringUtils.isNotBlank(type) ?
                 rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(baseCurrency, type, localDate) :
                 rateRepository.findAllByBaseCurrency_CodeAndFromDate(baseCurrency, localDate);
-        if (tmp.isEmpty()){
+        if (tmp.isEmpty()) {
             throw new NotFoundException("No rates found.");
         }
 
@@ -74,7 +75,7 @@ public class RateService {
         meta.put("from_date", localDate.toString());
         meta.put("base_currency", baseCurrency);
         HashMap<String, RatesDto.RateDto> data = new HashMap<>();
-        for (Rate rate : tmp){
+        for (Rate rate : tmp) {
             RatesDto.RateDto rateDto = new RatesDto.RateDto(rate.getCurrency().getCode(), rate.getPrice());
             data.put(rate.getCurrency().getCode(), rateDto);
         }

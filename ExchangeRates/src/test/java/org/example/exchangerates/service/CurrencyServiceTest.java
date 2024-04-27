@@ -42,13 +42,14 @@ class CurrencyServiceTest {
     CurrencyService currencyService;
 
     @Test
-    void findCurrencyBy_successful(){
-        final Currency currency = new Currency(
-                "TEST",
-                "Testing currency",
-                "Test",
-                "virtual"
-        );
+    void findCurrencyBy_successful() {
+
+        final Currency currency = Currency.builder()
+                .code("TEST")
+                .name("Testing currency")
+                .symbol("Test")
+                .type("virtual")
+                .build();
 
         when(currencyRepository.findByCode(anyString())).thenReturn(Optional.of(currency));
 
@@ -63,8 +64,9 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void modelData_successful(){
-        List<Currency> mockCurrencies = List.of(new Currency("TEST", "Testing currency", "Test", "virtual"));
+    void modelData_successful() {
+        List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
+
         HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto expected = new CurrenciesDto(expectedMap);
@@ -73,7 +75,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void modelData_empty(){
+    void modelData_empty() {
         List<Currency> mockCurrencies = Collections.emptyList();
 
         CurrenciesDto result = currencyService.modelData(mockCurrencies);
@@ -83,7 +85,7 @@ class CurrencyServiceTest {
 
     @Test
     void getAllCurrencies_successful() {
-        List<Currency> mockCurrencies = List.of(new Currency("TEST", "Testing currency", "Test", "virtual"));
+        List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
 
         HashMap<String, CurrenciesDto.CurrencyDto> mockMap = new HashMap<>();
         mockMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
@@ -96,8 +98,8 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getSpecificCurrency_successful(){
-        Currency mockCurrency = new Currency("TEST", "Testing currency", "Test", "virtual");
+    void getSpecificCurrency_successful() {
+        Currency mockCurrency = Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build();
 
         HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
@@ -110,8 +112,8 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getCurrenciesBy_successful(){
-        List<Currency> mockCurrencies = List.of(new Currency("TEST", "Testing currency", "Test", "virtual"));
+    void getCurrenciesBy_successful() {
+        List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
 
         HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));

@@ -8,7 +8,6 @@ import org.example.exchangerates.dto.CurrenciesDto;
 import org.example.exchangerates.entity.Currency;
 import org.example.exchangerates.exception.NotFoundException;
 import org.example.exchangerates.repository.CurrencyRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +28,8 @@ public class CurrencyService {
     private final CurrencyApiClient currencyApiClient;
     private final CurrencyApiProperties currencyApiProperties;
 
-    Currency findCurrencyBy(final String code){
-       return currencyRepository.findByCode(code).orElseThrow(() -> new NotFoundException("Currency not found."));
+    Currency findCurrencyBy(final String code) {
+        return currencyRepository.findByCode(code).orElseThrow(() -> new NotFoundException("Currency not found."));
     }
 
     @Transactional
@@ -47,17 +46,17 @@ public class CurrencyService {
             Set<String> existingCodes = currencyRepository.findAllCodes();
             int count = currencies.data().size();
             for (String key : currencies.data().keySet()) {
-                if (existingCodes.contains(key)){
+                if (existingCodes.contains(key)) {
                     count--;
                     continue;
                 }
                 CurrenciesDto.CurrencyDto tmp = currencies.data().get(key);
-                currencyRepository.save(new Currency(
-                        tmp.code(),
-                        tmp.name(),
-                        tmp.symbol(),
-                        tmp.type()
-                ));
+                currencyRepository.save(Currency.builder()
+                        .code(tmp.code())
+                        .name(tmp.name())
+                        .symbol(tmp.symbol())
+                        .type(tmp.type())
+                        .build());
             }
             return count;
         } catch (IOException e) {
@@ -65,9 +64,9 @@ public class CurrencyService {
         }
     }
 
-    CurrenciesDto modelData(final List<Currency> currencies){
+    CurrenciesDto modelData(final List<Currency> currencies) {
         HashMap<String, CurrenciesDto.CurrencyDto> data = new HashMap<>();
-        for (Currency currency : currencies){
+        for (Currency currency : currencies) {
             CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
                     currency.getCode(),
                     currency.getName(),
@@ -80,25 +79,25 @@ public class CurrencyService {
     }
 
     @Transactional(readOnly = true)
-    public CurrenciesDto getCurrenciesByPage(final int page){
+    public CurrenciesDto getCurrenciesByPage(final int page) {
         List<Currency> tmpList = currencyRepository.findAllBy(PageRequest.of(page, 10)).getContent();
         return modelData(tmpList);
     }
 
     @Transactional(readOnly = true)
-    public CurrenciesDto getAllCurrencies(){
+    public CurrenciesDto getAllCurrencies() {
         return modelData(currencyRepository.findAllCurrencies());
     }
 
     @Transactional(readOnly = true)
-    public CurrenciesDto getSpecificCurrency(final String code){
+    public CurrenciesDto getSpecificCurrency(final String code) {
         List<Currency> currencies = new ArrayList<>();
         currencies.add(findCurrencyBy(code));
         return modelData(currencies);
     }
 
     @Transactional(readOnly = true)
-    public CurrenciesDto getCurrenciesBy(final String type){
+    public CurrenciesDto getCurrenciesBy(final String type) {
         return modelData(currencyRepository.findAllByType(type));
     }
 
