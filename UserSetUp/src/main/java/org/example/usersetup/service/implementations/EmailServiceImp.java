@@ -45,13 +45,13 @@ public class EmailServiceImp implements EmailService {
 
 
     @Override
-    public void sendUserVerifyEmail(String to, String token, String name) throws MessagingException {
+    public void sendUserVerifyEmail(final String to, final String token, final String name) throws MessagingException {
 
         // vymyslet validaci
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
-        helper.setSubject("WeatherApp - verify your email");
+        helper.setSubject("UserSetUp - verify your email");
         helper.setText("<p>Hello, " + name + "!</p>" +
                 "<p>In order to verify your e-mail address, please, <a href=\"" +
                 System.getenv().get("homePageUrl") + "/users/verify-email/" +

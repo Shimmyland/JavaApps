@@ -16,7 +16,6 @@ import org.example.usersetup.utility.EncoderUtility;
 import org.example.usersetup.utility.JwtUtility;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,14 +30,12 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User getUserByName(final String username) {
-        Optional<User> tmp = userRepository.findByUsername(username);
-        return tmp.orElseThrow(() -> new UserNotFoundException("User not found."));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     @Override
     public User getUserByToken(final String token) {
-        Optional<User> tmp = userRepository.findByToken(token);
-        return tmp.orElseThrow(() -> new UserNotFoundException("User not found."));
+        return userRepository.findByToken(token).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     @Override
