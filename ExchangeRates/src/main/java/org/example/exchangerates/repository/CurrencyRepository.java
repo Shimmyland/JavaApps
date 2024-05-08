@@ -17,11 +17,21 @@ public interface CurrencyRepository extends JpaRepository<Currency, UUID> {
     @Query(value = "SELECT code FROM currency", nativeQuery = true)
     Set<String> findAllCodes();
 
-    @Query(value = "SELECT * FROM currency", nativeQuery = true)
+    @Query(value = "SELECT * FROM currency ORDER BY code", nativeQuery = true)
     List<Currency> findAllCurrencies();
 
-    @Query(value = "SELECT * FROM currency WHERE type = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM currency WHERE type = ?1 ORDER BY code", nativeQuery = true)
     List<Currency> findAllByType(String type);
 
-    Page<Currency> findAllBy(Pageable pageable);
+    Page<Currency> findAllByOrderByCodeAsc(Pageable pageable);
+
+
+    @Query(value = "SELECT COUNT(id) FROM currency", nativeQuery = true)
+    int countAll();
+
+    @Query(value = "SELECT COUNT(id) FROM currency WHERE type = ?1", nativeQuery = true)
+    int countByType(String type);
+
+    @Query(value = "SELECT COUNT(id) FROM currency WHERE code IN ?1", nativeQuery = true)
+    int countSpecificCurrencies(List<String> currencies);
 }

@@ -18,7 +18,7 @@ public class CurrencyScheduler {
         try {
             log.info("INIT: Currencies added into the DB: {}, request was successful.", currencyService.setNewCurrencies());
         } catch (Exception e){
-            log.error("THERE IS AN ISSUE WITH SAVING CURRENCIES: " + e.getMessage());
+            log.error("THERE IS AN ISSUE WITH SAVING CURRENCIES: {}", e.getMessage());
         }
     }
 

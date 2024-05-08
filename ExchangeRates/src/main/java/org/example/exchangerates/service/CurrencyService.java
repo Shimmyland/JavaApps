@@ -15,7 +15,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -28,9 +28,39 @@ public class CurrencyService {
     private final CurrencyApiClient currencyApiClient;
     private final CurrencyApiProperties currencyApiProperties;
 
+
+    // methods for RateService
+    int countAllCurrencies(){
+        return currencyRepository.countAll();
+    }
+
+    int countAllCurrenciesByType(final String type){
+        return currencyRepository.countByType(type);
+    }
+
+    int countCurrencies(final List<String> currencies){
+        return currencyRepository.countSpecificCurrencies(currencies);
+    }
+
+
+    CurrenciesDto modelData(final List<Currency> currencies) {
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> data = new LinkedHashMap<>();
+        for (Currency currency : currencies) {
+            CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
+                    currency.getCode(),
+                    currency.getName(),
+                    currency.getSymbol(),
+                    currency.getType()
+            );
+            data.put(currency.getCode(), currencyDto);
+        }
+        return new CurrenciesDto(data);
+    }
+
     Currency findCurrencyBy(final String code) {
         return currencyRepository.findByCode(code).orElseThrow(() -> new NotFoundException("Currency not found."));
     }
+
 
     @Transactional
     public int setNewCurrencies() {
@@ -64,24 +94,9 @@ public class CurrencyService {
         }
     }
 
-    CurrenciesDto modelData(final List<Currency> currencies) {
-        HashMap<String, CurrenciesDto.CurrencyDto> data = new HashMap<>();
-        for (Currency currency : currencies) {
-            CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(
-                    currency.getCode(),
-                    currency.getName(),
-                    currency.getSymbol(),
-                    currency.getType()
-            );
-            data.put(currency.getCode(), currencyDto);
-        }
-        return new CurrenciesDto(data);
-    }
-
     @Transactional(readOnly = true)
     public CurrenciesDto getCurrenciesByPage(final int page) {
-        List<Currency> tmpList = currencyRepository.findAllBy(PageRequest.of(page, 10)).getContent();
-        return modelData(tmpList);
+        return modelData(currencyRepository.findAllByOrderByCodeAsc(PageRequest.of(page, 10)).getContent());
     }
 
     @Transactional(readOnly = true)

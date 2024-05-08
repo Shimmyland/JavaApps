@@ -16,6 +16,7 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +68,7 @@ class CurrencyServiceTest {
     void modelData_successful() {
         List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
 
-        HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new LinkedHashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto expected = new CurrenciesDto(expectedMap);
 
@@ -87,7 +88,7 @@ class CurrencyServiceTest {
     void getAllCurrencies_successful() {
         List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
 
-        HashMap<String, CurrenciesDto.CurrencyDto> mockMap = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> mockMap = new LinkedHashMap<>();
         mockMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto mockDto = new CurrenciesDto(mockMap);
 
@@ -101,7 +102,7 @@ class CurrencyServiceTest {
     void getSpecificCurrency_successful() {
         Currency mockCurrency = Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build();
 
-        HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new LinkedHashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto expected = new CurrenciesDto(expectedMap);
 
@@ -115,7 +116,7 @@ class CurrencyServiceTest {
     void getCurrenciesBy_successful() {
         List<Currency> mockCurrencies = List.of(Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build());
 
-        HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new LinkedHashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto expected = new CurrenciesDto(expectedMap);
 
@@ -129,7 +130,7 @@ class CurrencyServiceTest {
     @Test
     void setNewCurrencies_successful() throws IOException {
         var request = mock(Call.class);
-        HashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> expectedMap = new LinkedHashMap<>();
         expectedMap.put("TEST", new CurrenciesDto.CurrencyDto("TEST", "Testing currency", "Test", "virtual"));
         CurrenciesDto expected = new CurrenciesDto(expectedMap);
 

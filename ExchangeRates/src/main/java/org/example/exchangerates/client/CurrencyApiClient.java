@@ -8,14 +8,16 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Query;
+import java.time.LocalDate;
 
 public interface CurrencyApiClient {
 
     @GET("v3/currencies")
     Call<CurrenciesDto> getAllCurrencies(@Header("apikey") final String apiKey);
 
-    @GET("v3/latest")
+    @GET("v3/historical")
     Call<RatesDto> getAllRates(@Header("apikey") final String apiKey,
+                               @NotNull @Query("date") final LocalDate date,
                                @NotNull @Query("base_currency") final String baseCurrency,
                                @Nullable @Query("currencies") final String currencies,
                                @Nullable @Query("type") final String type);

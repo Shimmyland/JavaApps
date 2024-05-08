@@ -17,7 +17,6 @@ import retrofit2.Response;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +46,112 @@ class RateServiceTest {
 
 
     @Test
-    void setRates_successful() throws IOException {
+    void ratesFromDatabase_all_successful() {
+        List<Rate> mockedRates = new ArrayList<>();
+        Rate rate = Rate.builder()
+                .fromDate(LocalDate.of(2024, 4, 19))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("USD").name("testing").symbol("us").type("fiat").build())
+                .price(1)
+                .build();
+        mockedRates.add(rate);
+
+        when(rateRepository.findAllByBaseCurrency_CodeAndFromDate(anyString(), any(LocalDate.class))).thenReturn(mockedRates);
+        when(currencyService.countAllCurrencies()).thenReturn(1);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", null, null, LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void ratesFromDatabase_all_empty() {
+        List<Rate> mockedRates = new ArrayList<>();
+
+        when(rateRepository.findAllByBaseCurrency_CodeAndFromDate(anyString(), any(LocalDate.class))).thenReturn(mockedRates);
+        when(currencyService.countAllCurrencies()).thenReturn(1);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", null, null, LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void ratesFromDatabase_currencies_successful() {
+        List<Rate> mockedRates = new ArrayList<>();
+        Rate rate1 = Rate.builder()
+                .fromDate(LocalDate.of(2024, 4, 19))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("EUR").name("testing").symbol("eur").type("fiat").build())
+                .price(1)
+                .build();
+        mockedRates.add(rate1);
+
+        when(currencyService.countCurrencies(any(List.class))).thenReturn(1);
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_CodeInAndFromDate(anyString(), any(List.class), any(LocalDate.class))).thenReturn(mockedRates);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", "EUR", null, LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void ratesFromDatabase_currencies_empty() {
+        List<Rate> mockedRates = new ArrayList<>();
+
+        when(currencyService.countCurrencies(any(List.class))).thenReturn(1);
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_CodeInAndFromDate(anyString(), any(List.class), any(LocalDate.class))).thenReturn(mockedRates);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", "EUR", null, LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void ratesFromDatabase_type_successful() {
+        List<Rate> mockedRates = new ArrayList<>();
+        Rate rate1 = Rate.builder()
+                .fromDate(LocalDate.of(2024, 4, 19))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("EUR").name("testing").symbol("eur").type("fiat").build())
+                .price(1)
+                .build();
+        mockedRates.add(rate1);
+
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(mockedRates);
+        when(currencyService.countAllCurrenciesByType(anyString())).thenReturn(1);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", null, "fiat", LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void ratesFromDatabase_type_empty() {
+        List<Rate> mockedRates = new ArrayList<>();
+
+        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(mockedRates);
+        when(currencyService.countAllCurrenciesByType(anyString())).thenReturn(1);
+
+        assertEquals(mockedRates, rateService.ratesFromDatabase("CZK", null, "fiat", LocalDate.of(2024, 4, 19)));
+    }
+
+    @Test
+    void modelData_successful() {
+        List<Rate> mockedRates = new ArrayList<>();
+        Rate rate1 = Rate.builder()
+                .fromDate(LocalDate.of(2024,4,19))
+                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
+                .currency(Currency.builder().code("USD").name("testing").symbol("us").type("fiat").build())
+                .price(1)
+                .build();
+        mockedRates.add(rate1);
+
+        HashMap<String, String> meta = new HashMap<>();
+        meta.put("from_date", LocalDate.of(2024,4,19).toString());
+        meta.put("base_currency", "USD");
+        HashMap<String, RatesDto.RateDto> data = new HashMap<>();
+        for (Rate rate : mockedRates) {
+            RatesDto.RateDto rateDto = new RatesDto.RateDto(rate.getCurrency().getCode(), rate.getPrice());
+            data.put(rate.getCurrency().getCode(), rateDto);
+        }
+        RatesDto ratesDto = new RatesDto(meta, data);
+
+        assertEquals(ratesDto, rateService.modelData(mockedRates, LocalDate.of(2024,4,19), "USD"));
+    }
+
+    @Test
+    void fetchAndSaveData_successful() throws IOException {
         var request = mock(Call.class);
         HashMap<String, String> mockedMeta = new HashMap<>();
         mockedMeta.put("last_updated_at", "2024-04-19");
@@ -57,76 +161,34 @@ class RateServiceTest {
         Currency mockedCurrency = Currency.builder().code("TEST").name("Testing currency").symbol("Test").type("virtual").build();
 
         when(currencyApiProperties.getAccessKey()).thenReturn("testAccessKey");
-        when(currencyApiClient.getAllRates(anyString(), anyString(), anyString(), anyString())).thenReturn(request);
+        when(currencyApiClient.getAllRates(anyString(), any(LocalDate.class), anyString(), anyString(), anyString())).thenReturn(request);
         when(request.execute()).thenReturn(Response.success(mockedResponse));
-        when(currencyService.findCurrencyBy(anyString())).thenReturn(mockedCurrency);
         when(rateRepository.existsByParams(anyString(), anyString(), any(LocalDate.class))).thenReturn(false);
-        // when(rateRepository.save(any(Rate.class))).thenReturn();
+        when(currencyService.findCurrencyBy(anyString())).thenReturn(mockedCurrency);
 
-        assertEquals(mockedResponse, rateService.setRates("TEST1", "TEST2", "TEST3"));
+
+        assertEquals(mockedResponse, rateService.fetchAndSaveData("CZK", "null", "null", LocalDate.of(2024,4,19)));
     }
 
     @Test
-    void setRates_currencyNotFound() throws IOException {
+    void fetchAndSaveData_currencyNotFound() throws IOException {
         var request = mock(Call.class);
 
         when(currencyApiProperties.getAccessKey()).thenReturn("testAccessKey");
-        when(currencyApiClient.getAllRates(anyString(), anyString(), anyString(), anyString())).thenReturn(request);
+        when(currencyApiClient.getAllRates(anyString(), any(LocalDate.class), anyString(), anyString(), anyString())).thenReturn(request);
         when(request.execute()).thenReturn(Response.success(null));
 
-        assertThrows(NotFoundException.class, () -> rateService.setRates("TEST1", "TEST2", "TEST3"));
+        assertThrows(NotFoundException.class, () -> rateService.fetchAndSaveData("CZK", "null", "null", LocalDate.of(2024,4,19)));
     }
 
     @Test
-    void setRates_ioException() throws IOException {
+    void fetchAndSaveData_ioException() throws IOException {
         var request = mock(Call.class);
 
         when(currencyApiProperties.getAccessKey()).thenReturn("testAccessKey");
-        when(currencyApiClient.getAllRates(anyString(), anyString(), anyString(), anyString())).thenReturn(request);
+        when(currencyApiClient.getAllRates(anyString(), any(LocalDate.class), anyString(), anyString(), anyString())).thenReturn(request);
         when(request.execute()).thenThrow(IOException.class);
 
-        assertThrows(NotFoundException.class, () -> rateService.setRates("TEST1", "TEST2", "TEST3"));
+        assertThrows(NotFoundException.class, () -> rateService.fetchAndSaveData("CZK", "null", "null", LocalDate.of(2024,4,19)));
     }
-
-    @Test
-    void getRates_successful_allParams() {
-        List<Rate> mockedRates = new ArrayList<>();
-        Rate rate1 = Rate.builder()
-                .fromDate(LocalDate.ofEpochDay(2024 - 04 - 23))
-                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
-                .currency(Currency.builder().code("USD").name("testing").symbol("us").type("fiat").build())
-                .price(1)
-                .build();
-        Rate rate2 = Rate.builder()
-                .fromDate(LocalDate.ofEpochDay(2024 - 04 - 23))
-                .baseCurrency(Currency.builder().code("CZK").name("testing").symbol("kč").type("fiat").build())
-                .currency(Currency.builder().code("EUR").name("testing").symbol("eu").type("fiat").build())
-                .price(2)
-                .build();
-        mockedRates.add(rate1);
-        mockedRates.add(rate2);
-
-        HashMap<String, RatesDto.RateDto> data = new HashMap<>();
-        RatesDto.RateDto rateDto = new RatesDto.RateDto("USD", 1);
-        data.put("USD", rateDto);
-        RatesDto.RateDto rateDto1 = new RatesDto.RateDto("EUR", 2);
-        data.put("EUR", rateDto1);
-        HashMap<String, String> meta = new HashMap<>();
-        meta.put("from_date", "2024-04-23");
-        meta.put("base_currency", "CZK");
-        RatesDto mockedResult = new RatesDto(meta, data);
-
-        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(mockedRates);
-
-        assertEquals(mockedResult, rateService.getRates("CZK", "fiat", "2024-04-23"));
-    }
-
-    @Test
-    void getRates_successful_ratesNotFound() {
-        when(rateRepository.findAllByBaseCurrency_CodeAndCurrency_TypeAndFromDate(anyString(), anyString(), any(LocalDate.class))).thenReturn(Collections.emptyList());
-
-        assertThrows(NotFoundException.class, () -> rateService.getRates("CZK", "fiat", "2024-04-23"));
-    }
-
-
 }

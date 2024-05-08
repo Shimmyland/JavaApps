@@ -1,14 +1,10 @@
 package org.example.exchangerates.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.exchangerates.dto.CurrenciesDto;
-import org.example.exchangerates.dto.RatesDto;
 import org.example.exchangerates.exception.InvalidInputException;
 import org.example.exchangerates.service.CurrencyService;
 import org.springframework.http.ResponseEntity;
@@ -29,100 +25,40 @@ public class CurrencyController {
     // https://currencyapi.com/docs/currencies
 
     @Operation(
-            description = "Based on your entered number of 'page', it will return a list of currencies. Page size is set to list of ten currencies and the default value is set to 0.",
-            summary = "Responsible for listing currencies from database by page.",
-            method = "GET",
-            responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "Returned when the request was successful.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = CurrenciesDto.class),
-                                    examples = @ExampleObject(value = "{data: {EUR: {code: EUR, name: Euro, symbol: €, type: fiat},GBP: {code: GBP, name: British Pound Sterling, symbol: £, type: fiat}}}"))
-                    ),
-                    @ApiResponse(responseCode = "400",
-                            description = "Returned when request was not successful, if its body is empty.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "{'error' : 'Currency not found.'}"))
-                    )
-            }
-    )
+            description = "Based on your entered number of 'page', it will return a list of 10 currencies." +
+            "If you place a number which is higher then the total number of pages, it will return an empty list of 'data'.",
+            summary = "Responsible for listing currencies from database by page.")
+    @ApiResponse(responseCode = "200", ref = "getCurrenciesByPage200")
+    @ApiResponse(responseCode = "400", ref = "getCurrenciesByPage400")
     @GetMapping
-    public ResponseEntity<CurrenciesDto> getCurrenciesByPage(@RequestParam (defaultValue = "0") int page){
+    public ResponseEntity<CurrenciesDto> getCurrenciesByPage(@RequestParam(defaultValue = "0") int page) {
+        if (page < 0){
+            throw new InvalidInputException("Invalid input, the page cannot be negative number.");
+        }
         return ResponseEntity.ok(currencyService.getCurrenciesByPage(page));
     }
 
-    @Operation(
-            summary = "Responsible for listing all currencies saved in database.",
-            method = "GET",
-            responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "Returned when the request was successful.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = CurrenciesDto.class),
-                                    examples = @ExampleObject(value = "{data: {EUR: {code: EUR, name: Euro, symbol: €, type: fiat},GBP: {code: GBP, name: British Pound Sterling, symbol: £, type: fiat}}}"))
-                    ),
-                    @ApiResponse(responseCode = "400",
-                            description = "Returned when request was not successful, if its body is empty.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "{'error' : 'Currency not found.'}"))
-                    )
-            }
-    )
+    @Operation(summary = "Responsible for listing all currencies saved in database.")
+    @ApiResponse(responseCode = "200", ref = "getAllCurrencies200")
     @GetMapping("/all")
-    public ResponseEntity<CurrenciesDto> getAllCurrencies(){
+    public ResponseEntity<CurrenciesDto> getAllCurrencies() {
         return ResponseEntity.ok(currencyService.getAllCurrencies());
     }
 
-    @Operation(
-            summary = "Responsible for listing specific currency saved in database.",
-            method = "GET",
-            responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "Returned when the request was successful.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = CurrenciesDto.class),
-                                    examples = @ExampleObject(value = "{data: {EUR: {code: EUR, name: Euro, symbol: €, type: fiat}}}"))
-                    ),
-                    @ApiResponse(responseCode = "400",
-                            description = "Returned when request was not successful, if its body is empty.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "{'error' : 'Currency not found.'}"))
-                    )
-            }
-    )
+    @Operation(summary = "Responsible for listing specific currency saved in database.")
+    @ApiResponse(responseCode = "200", ref = "getCurrencyByCode200")
+    @ApiResponse(responseCode = "400", ref = "getCurrencyByCode400")
     @GetMapping("/{code}")
-    public ResponseEntity<CurrenciesDto> getCurrencyByCode(@PathVariable final String code){
+    public ResponseEntity<CurrenciesDto> getCurrencyByCode(@PathVariable final String code) {
         return ResponseEntity.ok(currencyService.getSpecificCurrency(code));
     }
 
-    @Operation(
-            summary = "Responsible for listing currencies by type from database.",
-            method = "GET",
-            responses = {
-                    @ApiResponse(responseCode = "200",
-                            description = "Returned when the request was successful.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = CurrenciesDto.class),
-                                    examples = @ExampleObject(value = "{data: {EUR: {code: EUR, name: Euro, symbol: €, type: fiat},GBP: {code: GBP, name: British Pound Sterling, symbol: £, type: fiat}}}"))
-                    ),
-                    @ApiResponse(responseCode = "400",
-                            description = "Returned when request was not successful, if its body is empty.",
-                            content = @Content(
-                                    mediaType = "application/json",
-                                    examples = @ExampleObject(value = "{'error' : 'Currency not found.'}"))
-                    )
-            }
-    )
+    @Operation(summary = "Responsible for listing currencies by type from database.")
+    @ApiResponse(responseCode = "200", ref = "getCurrenciesByType200")
+    @ApiResponse(responseCode = "400", ref = "getCurrenciesByType400")
     @GetMapping("/type/{type}")
-    public ResponseEntity<CurrenciesDto> getCurrenciesByType(@PathVariable final String type){
-        if (!type.equals("fiat") && !type.equals("crypto") && !type.equals("metal")){
+    public ResponseEntity<CurrenciesDto> getCurrenciesByType(@PathVariable final String type) {
+        if (!type.equals("fiat") && !type.equals("crypto") && !type.equals("metal")) {
             throw new InvalidInputException("Invalid input type. It has to be 'fiat', 'crypto' or 'metal'.");
         }
         return ResponseEntity.ok(currencyService.getCurrenciesBy(type));

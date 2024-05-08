@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.example.exchangerates.dto.CurrenciesDto;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class CurrenciesDeserializer extends StdDeserializer<CurrenciesDto> {
 
@@ -17,7 +17,7 @@ public class CurrenciesDeserializer extends StdDeserializer<CurrenciesDto> {
     @Override
     public CurrenciesDto deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        HashMap<String, CurrenciesDto.CurrencyDto> data = new HashMap<>();
+        LinkedHashMap<String, CurrenciesDto.CurrencyDto> data = new LinkedHashMap<>();
 
         node.get("data").fields().forEachRemaining(entry -> {
             CurrenciesDto.CurrencyDto currencyDto = new CurrenciesDto.CurrencyDto(

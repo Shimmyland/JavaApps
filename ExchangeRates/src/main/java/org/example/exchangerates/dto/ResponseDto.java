@@ -1,4 +1,7 @@
 package org.example.exchangerates.dto;
 
-public record ResponseDto(String message) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Object for errors")
+public record ResponseDto(@Schema(example = "Currency not found.") String message) {
 }
