@@ -2,7 +2,7 @@
 This repository is dedicated to small projects written in Java where I can demonstrate what I've learned so far.
 
 ## Exchange Rates
-🚧 Currently a work in progress
+REST API application that automatically downloads currencies when it's turned on. It also downloads all exchange rates every night and store everything into database.
 
 ## Project Movie Rental
 🚧 Currently a work in progress
