@@ -15,7 +15,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
