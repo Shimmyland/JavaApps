@@ -2,7 +2,7 @@
 This repository is dedicated to small projects written in Java where I can demonstrate what I've learned so far.
 
 ## Exchange Rates
-REST API application that automatically downloads currencies when it's turned on. It also downloads all exchange rates every night and store everything into database.
+This REST API application is designed to facilitate the retrieval and management of currency exchange rates. It offers functionality for fetching up-to-date exchange rates from various sources, storing them in a database, and providing easy access to users. The system allows users to query exchange rates or currencies based on varius parameters, providing them with accurate and relevant information as needed. Additionally, the project includes error handling features to ensure smooth operation and reliability, scheduler to work with up-to-date currencies and documentation in OpenAPI (api-docs).
 
 ## Project Movie Rental
 🚧 Currently a work in progress
